@@ -7,6 +7,10 @@ let startTime = Date.now();
 var times = window.innerWidth / 100
 var ww = window.innerWidth
 
+caches.open("cache").then((cache) => {
+    cache.add("../game-over").then(() => console.log("Data added to cache.")).catch((error) => console.error("Error adding data to cache:", error));
+})
+
 function setup() {
 	new Canvas();
 	world.gravity.y = 10;
@@ -76,6 +80,10 @@ function draw() {
         enem[i].rotation = 0;
 
         for (let x = 0; x < prog.length; x++) {
+            if ((prog[x].x >= window.innerWidth || prog[x].x <= 0) || (prog[x].y >= window.innerHeight|| prog[x].y <= 0)) {
+                prog.splice(x, 1)
+                prog[x].remove()
+            }
             if (enem[i].overlaps(prog[x])) {
                 console.log("hit")
                 enem[i].remove()
