@@ -6,12 +6,20 @@ let startTime = Date.now();
 
 var times = window.innerWidth / 100
 var ww = window.innerWidth
+var isded = false
+
+var seconds = 0;
 
 caches.open("cache").then((cache) => {
     cache.add("../game-over").then(() => console.log("Data added to cache.")).catch((error) => console.error("Error adding data to cache:", error));
 })
 
 function setup() {
+    setInterval(function() {
+        seconds++;
+        console.log(Math.floor(seconds / 60))
+    }, 1000);
+
 	new Canvas();
 	world.gravity.y = 10;
 
@@ -47,18 +55,46 @@ function setup() {
     cur.collider = 'none'
     cur.layer = 12
     mouse.visible = false;
+
+    time = new Sprite()
+    time.collider = 'none'
+    time.textSize = 20;
+    time.layer = 11
+    time.x = window.innerWidth / 2
+    time.y = window.innerHeight - 15
+    time.height = 30
 }
 
 function draw() {
 	clear();
+
+    if (seconds / 60 >= 1) {
+        var secs = seconds - (Math.floor(seconds / 60) * 60)
+    } else {
+        var secs = seconds
+    }
+
+    if (secs < 10) {
+        var tsec = ("0" + secs)
+    } else {
+        var tsec = secs
+    }
+    if (Math.floor(seconds / 60) < 10) {
+        var tmin = ("0" + Math.floor(seconds / 60))
+    } else {
+        var tmin = Math.floor(seconds / 60)
+    }
+
+    time.text = (String(tmin) + ":" + String(tsec))
 
     hbar.x = (health * times) - ww / 2
     htex.text = health
 
     cur.moveTowards(mouse, 1);
 
-    if (health <= 0) {
+    if (health <= 0 && !isded) {
         window.location.href = "../game-over"
+        isded = true
     }
 
     // Spawing enemys
@@ -80,14 +116,20 @@ function draw() {
         enem[i].rotation = 0;
 
         for (let x = 0; x < prog.length; x++) {
-            if ((prog[x].x >= window.innerWidth || prog[x].x <= 0) || (prog[x].y >= window.innerHeight|| prog[x].y <= 0)) {
-                prog.splice(x, 1)
-                prog[x].remove()
+            try {
+                if (enem[i].overlaps(prog[x])) {
+                    console.log("hit")
+                    enem[i].remove()
+                    prog[x].remove()
+                    enem.splice(i, 1)
+                    console.log(enem)
+                }
+            } catch (error) {
+                console.log(error)
             }
-            if (enem[i].overlaps(prog[x])) {
-                console.log("hit")
-                enem[i].remove()
+            if ((prog[x].x >= window.innerWidth || prog[x].x <= 0) || (prog[x].y >= window.innerHeight|| prog[x].y <= 0)) {
                 prog[x].remove()
+                prog.splice(x, 1)
             }
         }
     }
