@@ -6,6 +6,7 @@ let startTime = Date.now();
 
 var times = window.innerWidth / 100
 var ww = window.innerWidth
+var wh = window.innerHeight
 var isded = false
 
 var seconds = 0;
@@ -99,12 +100,40 @@ function draw() {
 
     // Spawing enemys
     if ((Date.now() - startTime) >= 1000) {
-        ene = new Sprite();
-        ene.y = 30;
-        ene.x = Math.floor(Math.random() * ww);
-        ene.layer = 1
-        enem.push(ene)
-        startTime = Date.now()
+        switch (Math.floor(Math.random() * 4)) {
+            case 0:
+                ene = new Sprite();
+                ene.y = 30;
+                ene.x = Math.floor(Math.random() * ww);
+                ene.layer = 1
+                enem.push(ene)
+                startTime = Date.now()
+                break;
+            case 1:
+                ene = new Sprite();
+                ene.y = wh;
+                ene.x = Math.floor(Math.random() * ww);
+                ene.layer = 1
+                enem.push(ene)
+                startTime = Date.now()
+                break;
+            case 2:
+                ene = new Sprite();
+                ene.y = Math.floor(Math.random() * wh);
+                ene.x = ww;
+                ene.layer = 1
+                enem.push(ene)
+                startTime = Date.now()
+                break;
+            case 3:
+                ene = new Sprite();
+                ene.y = Math.floor(Math.random() * wh);
+                ene.x = 0;
+                ene.layer = 1
+                enem.push(ene)
+                startTime = Date.now()
+                break;
+        }
     }
 
     // Player damage
@@ -157,13 +186,13 @@ function draw() {
     }
 
     // Left Right
-    if (kb.pressing("left")) {
+    if (kb.pressing("left") && player.x >= 0) {
         if (!(player.vel.x <= -3)) {
             player.vel.x -= .4
         } else {
             player.vel.x = -1
         }
-    } else if (kb.pressing("right")) {
+    } else if (kb.pressing("right") && player.x <= ww) {
         if (!(player.vel.x >= 3)) {
             player.vel.x += .4
         } else {
@@ -180,13 +209,13 @@ function draw() {
     }
 
     // Up down
-    if (kb.pressing("up")) {
+    if (kb.pressing("up") && player.y >= 0) {
         if (!(player.vel.y <= -3)) {
             player.vel.y -= .4
         } else {
             player.vel.y = -1
         }
-    } else if (kb.pressing("down")) {
+    } else if (kb.pressing("down") && player.y <= wh) {
         if (!(player.vel.y >= 3)) {
             player.vel.y += .4
         } else {
