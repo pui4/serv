@@ -1,6 +1,7 @@
 let player, gun;
 let prog = []
 let enem = []
+let pics = []
 let health = 100
 let startTime = Date.now();
 
@@ -10,6 +11,8 @@ var wh = window.innerHeight
 var isded = false
 
 var seconds = 0;
+var score = 0;
+var spawnRate = 1000;
 
 caches.open("cache").then((cache) => {
     cache.add("../game-over").then(() => console.log("Data added to cache.")).catch((error) => console.error("Error adding data to cache:", error));
@@ -64,11 +67,23 @@ function setup() {
     time.x = window.innerWidth / 2
     time.y = window.innerHeight - 15
     time.height = 30
+
+    score_s = new Sprite()
+    score_s.collider = 'none'
+    score_s.textSize = 20;
+    score_s.layer = 11
+    score_s.x = 20
+    score_s.y = window.innerHeight - 15
+    score_s.height = 30
 }
 
 function draw() {
 	clear();
 
+    // Score
+    score_s.text = score
+
+    // Timer
     if (seconds / 60 >= 1) {
         var secs = seconds - (Math.floor(seconds / 60) * 60)
     } else {
@@ -91,6 +106,7 @@ function draw() {
     hbar.x = (health * times) - ww / 2
     htex.text = health
 
+    // Cursor
     cur.moveTowards(mouse, 1);
 
     if (health <= 0 && !isded) {
@@ -99,7 +115,7 @@ function draw() {
     }
 
     // Spawing enemys
-    if ((Date.now() - startTime) >= 1000) {
+    if ((Date.now() - startTime) >= spawnRate) {
         switch (Math.floor(Math.random() * 4)) {
             case 0:
                 ene = new Sprite();
@@ -144,9 +160,18 @@ function draw() {
         enem[i].moveTowards(player, .01);
         enem[i].rotation = 0;
 
+        // Enemy death
         for (let x = 0; x < prog.length; x++) {
             try {
                 if (enem[i].overlaps(prog[x])) {
+                    var pic = new Sprite()
+                    pic.diameter = 20
+                    pic.collider = 'none'
+                    pic.x = enem[i].x
+                    pic.y = enem[i].y
+                    pic.layer = 0
+                    pics.push(pic)
+
                     console.log("hit")
                     enem[i].remove()
                     prog[x].remove()
@@ -160,6 +185,15 @@ function draw() {
                 prog[x].remove()
                 prog.splice(x, 1)
             }
+        }
+    }
+
+    // Checking pics
+    for (let i = 0; i < pics.length; i++) {
+        if (pics[i].overlaps(player)) {
+            pics[i].remove()
+            pics.splice(i, 1)
+            score++
         }
     }
 
